@@ -98,7 +98,7 @@ function buildCard(e, regex) {
 
   const q = document.createElement('div');
   q.className = 'question';
-  q.innerHTML = renderMarkdown(e.question.trim());
+  q.innerHTML = renderQuestion(e.question.trim());
   card.appendChild(q);
 
   if (e.answer.trim()) {
@@ -117,6 +117,12 @@ function renderMarkdown(md) {
     return marked.parse(md);
   }
   return '<p>' + escapeHtml(md) + '</p>';
+}
+
+function renderQuestion(md) {
+  // 把 "A. xxx" 形式的选项行转成列表项，让每个选项单独占一行
+  const asList = md.replace(/^([A-D][.、．]\s*)/gm, '- $1');
+  return renderMarkdown(asList);
 }
 
 function escapeHtml(s) {

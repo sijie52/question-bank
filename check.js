@@ -16,12 +16,13 @@ function parse(text) {
   lines.forEach((line, idx) => {
     const lineNo = idx + 1;
     if (/^###\s+/.test(line)) {
-      cur = { question: '', answer: '', line: lineNo };
+      cur = { question: '', answer: '', type: '', line: lineNo };
       out.push(cur);
       section = 'question';
       cur.question += line.replace(/^###\s+/, '') + '\n';
     } else if (/^\s*\*\*题型\*\*\s*[:：]?\s*(单选|多选|判断)\s*$/.test(line)) {
-      // 题型标记行：忽略，不参与查重比对
+      // 题型标记行：作为元数据记录，不进入题干文本
+      if (cur) cur.type = line.replace(/^\s*\*\*题型\*\*\s*[:：]?\s*/, '').trim();
     } else if (/^\s*\*\*答案\*\*\s*[:：]?\s*(.*)$/.test(line)) {
       if (!cur) return;
       section = 'answer';
@@ -51,10 +52,11 @@ function normalize(s) {
 const text = fs.readFileSync(file, 'utf8');
 const entries = parse(text);
 
+// 查重只在「同一题型」内进行；不同题型之间即使题干一样也不视为重复。
 const groups = new Map();
 for (const e of entries) {
-  const key = normalize(e.question);
-  if (!key) continue;
+  const key = (e.type || '未标注') + '\u0001' + normalize(e.question);
+  if (!normalize(e.question)) continue;
   if (!groups.has(key)) groups.set(key, []);
   groups.get(key).push(e);
 }
@@ -66,11 +68,11 @@ if (dups.length === 0) {
   process.exit(0);
 }
 
-console.log('⚠️ 发现 ' + dups.length + ' 组重复题：\n');
+console.log('⚠️ 发现 ' + dups.length + ' 组重复题（同题型内）：\n');
 dups.forEach((g, i) => {
-  console.log('[' + (i + 1) + '] ' + g[0].question.trim());
+  console.log('[' + (i + 1) + ']（' + (g[0].type || '未标注') + '）' + g[0].question.trim().split('\n')[0]);
   g.forEach((e) => {
-    console.log('    第 ' + e.line + ' 行：' + e.question.trim().replace(/\n/g, ' '));
+    console.log('    第 ' + e.line + ' 行：' + e.question.trim().split('\n')[0]);
   });
   console.log('');
 });

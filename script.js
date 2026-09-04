@@ -4,7 +4,7 @@ const statsEl = document.getElementById('stats');
 const typeButtons = Array.from(document.querySelectorAll('.type-btn'));
 
 let entries = [];
-let selectedType = '多选';
+let selectedType = '单选';
 
 async function load() {
   try {
@@ -203,8 +203,8 @@ function onTypeClick(e) {
 
 typeButtons.forEach((btn) => btn.addEventListener('click', onTypeClick));
 
-// 记录当前选中的多选按钮
-setType('多选');
+// 默认选中「单选」
+setType('单选');
 
 searchInput.addEventListener('input', render);
 load();

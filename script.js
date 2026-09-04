@@ -1,8 +1,10 @@
 const searchInput = document.getElementById('search');
 const resultsEl = document.getElementById('results');
 const statsEl = document.getElementById('stats');
+const typeButtons = Array.from(document.querySelectorAll('.type-btn'));
 
 let entries = [];
+let selectedType = '多选';
 
 async function load() {
   try {
@@ -26,10 +28,13 @@ function parseEntries(text) {
 
   for (const line of lines) {
     if (/^###\s+/.test(line)) {
-      cur = { question: '', answer: '' };
+      cur = { question: '', answer: '', type: '' };
       out.push(cur);
       section = 'question';
       cur.question += line.replace(/^###\s+/, '') + '\n';
+    } else if (/^\s*\*\*题型\*\*\s*[:：]?\s*(单选|多选|判断)\s*$/.test(line)) {
+      // 题型标记行：作为元数据存下来，不显示在题目里
+      if (cur) cur.type = line.replace(/^\s*\*\*题型\*\*\s*[:：]?\s*/, '').trim();
     } else if (/^\s*\*\*答案\*\*\s*[:：]?\s*(.*)$/.test(line)) {
       if (!cur) continue;
       section = 'answer';
@@ -62,15 +67,25 @@ function matches(e, kw) {
 }
 
 function render() {
-  const kw = loweredKeywords();
-  const matched = kw.length ? entries.filter((e) => matches(e, kw)) : entries;
+  // 先按题型筛出题库
+  const pool = entries.filter((e) => e.type === selectedType);
+
   resultsEl.innerHTML = '';
 
+  if (!pool.length) {
+    statsEl.textContent = '「' + selectedType + '」暂无题目';
+    resultsEl.innerHTML = '<p class="empty">该题型题库还没有题目。</p>';
+    return;
+  }
+
+  const kw = loweredKeywords();
+  const matched = kw.length ? pool.filter((e) => matches(e, kw)) : pool;
+
   if (matched.length) {
-    statsEl.textContent = '共 ' + matched.length + ' 题' +
+    statsEl.textContent = '「' + selectedType + '」共 ' + matched.length + ' 题' +
       (kw.length ? '（关键词：' + rawKeywords().join('、') + '）' : '');
   } else {
-    statsEl.textContent = kw.length ? '没有匹配的题目' : '题库为空';
+    statsEl.textContent = kw.length ? '「' + selectedType + '」没有匹配的题目' : '题库为空';
   }
 
   if (!matched.length) {
@@ -168,6 +183,28 @@ function highlightText(root, regex) {
     node.parentNode.replaceChild(frag, node);
   }
 }
+
+function setType(type) {
+  selectedType = type;
+  typeButtons.forEach((btn) => {
+    const isActive = btn.dataset.type === type;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
+  });
+}
+
+function onTypeClick(e) {
+  const type = e.currentTarget.dataset.type;
+  if (type === selectedType) return; // 已选中，忽略
+  setType(type);
+  searchInput.value = ''; // 切换题型清空搜索框
+  render();
+}
+
+typeButtons.forEach((btn) => btn.addEventListener('click', onTypeClick));
+
+// 记录当前选中的多选按钮
+setType('多选');
 
 searchInput.addEventListener('input', render);
 load();

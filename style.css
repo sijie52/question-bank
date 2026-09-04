@@ -31,6 +31,33 @@ header {
 
 h1 { font-size: 20px; margin: 0 0 12px; }
 
+.type-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.type-btn {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 15px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.type-btn:hover { border-color: var(--accent); }
+
+.type-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
 #search {
   width: 100%;
   padding: 12px 14px;

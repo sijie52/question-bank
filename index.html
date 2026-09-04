@@ -10,6 +10,11 @@
   <header>
     <div class="container">
       <h1>题目检索</h1>
+      <div class="type-bar" role="radiogroup" aria-label="题型选择">
+        <button type="button" class="type-btn" data-type="单选" role="radio">单选</button>
+        <button type="button" class="type-btn" data-type="多选" role="radio">多选</button>
+        <button type="button" class="type-btn" data-type="判断" role="radio">判断</button>
+      </div>
       <input type="search" id="search" placeholder="输入关键词搜索题目…（空格分隔多个关键词）" autofocus>
       <div id="stats"></div>
     </div>

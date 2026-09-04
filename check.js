@@ -20,6 +20,8 @@ function parse(text) {
       out.push(cur);
       section = 'question';
       cur.question += line.replace(/^###\s+/, '') + '\n';
+    } else if (/^\s*\*\*题型\*\*\s*[:：]?\s*(单选|多选|判断)\s*$/.test(line)) {
+      // 题型标记行：忽略，不参与查重比对
     } else if (/^\s*\*\*答案\*\*\s*[:：]?\s*(.*)$/.test(line)) {
       if (!cur) return;
       section = 'answer';

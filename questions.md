@@ -2235,3 +2235,16 @@ D. MD5
 **答案**
 
 C
+
+### GM/T 0010《SM2密码算法加密签名消息语法规范》中的含有语法版本号字段的类型包括（ ）。
+
+**题型**：多选
+
+A. KeyAgreementInfo
+B. EncryptedData
+C. signedAndEnvelopedData
+D. RecipientInfo
+
+**答案**
+
+A、B、C、D

@@ -2251,3 +2251,16 @@ D. 公钥解密算法
 **答案**
 
 A
+
+### 移位密码通常可用来加密普通的英文句子，假设其密钥为K=11，将明文“wewillmeet”加密后，密文为（ ）。
+
+**题型**：单选
+
+A. JQJTXXYQQG
+B. HPHTWWXPPE
+C. JEJUZZXEEQ
+D. HQHTXXWQQF
+
+**答案**
+
+B
